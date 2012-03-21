@@ -137,26 +137,27 @@ class DefaultController extends Controller
         $this->render('requirements', array('requirements' => $requirements, 'result' => $result));
     }
 
-    public function actionDbsettings()
-    {
+    /*
+     * Шаг настроек соединения с базой данных.
+     */
+    public function actionDbsettings() {
+        
         $this->stepName = Yii::t('install', 'Шаг 3 из 6 : "Соединение с базой данных"');
-
-        $dbConfFile = Yii::app()->basePath . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'db.php';
-
+        
         $sqlDataDir = $this->module->basePath . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR;
 
         $sqlFile = $sqlDataDir . 'yupe.sql';
-
         $form = new DbSettingsForm;
+        
+        if( Yii::app()->request->isPostRequest ) {
 
-        if (Yii::app()->request->isPostRequest)
-        {
+            
             $form->setAttributes($_POST['DbSettingsForm']);
 
-            if ($form->validate())
-            {
-                try
-                {
+            if( $form->validate() ) {
+                
+                try {
+                    
                     //@TODO правильня обработка указанного номера порта - сейчас вообще не учитывается
                     $connectionString = "mysql:host={$form->host};dbname=$form->dbName";
                     $connection = new CDbConnection($connectionString, $form->user, $form->password);
@@ -169,34 +170,23 @@ class DefaultController extends Controller
 
                     Yii::app()->setComponent('db', $connection);
 
-                    $dbParams = array(
-                        'class' => 'CDbConnection',
-                        'connectionString' => "mysql:host={$form->host};dbname=$form->dbName",
-                        'username' => $form->user,
-                        'password' => $form->password,
-                        'emulatePrepare' => true,
-                        'charset' => 'utf8',
-                        'enableParamLogging' => 1,
-                        'enableProfiling' => 1,
-                        'schemaCachingDuration' => 108000,
-                        'tablePrefix' => ''
+                    $config = new YConfiguration( Yii::app()->basePath . '/config/main.php' );
+
+                    $config->update(
+                        array(
+                            'components' => array (
+                                'db' => array (
+                                    'connectionString' => 'mysql:host=' . $form->host . ';dbname=' . $form->dbName,
+                                    'username' => $form->user,
+                                    'password' => $form->password,
+                                    'charset' => 'utf8',
+                                    'tablePrefix' => 'sws'
+                                )
+                            )
+                        )
                     );
 
-                    $dbConfString = "<?php\n return " . var_export($dbParams, true) . " ;\n?>";
 
-                    $fh = fopen($dbConfFile, 'w+');
-
-                    if (!$fh)                    
-                        $form->addError('', Yii::t('install', "Не могу открыть файл '{file}' для записии!", array('{file}' => $dbConfFile)));
-                    
-                    else
-                    {
-                        //@TODO корректная обработка ошибок IO
-                        fwrite($fh, $dbConfString);
-
-                        fclose($fh);
-
-                        @chmod($dbConfFile, 0666);
 
                         $result = $this->executeSql($sqlFile);
 
@@ -217,7 +207,7 @@ class DefaultController extends Controller
                         Yii::app()->user->setFlash(YFlashMessages::NOTICE_MESSAGE, Yii::t('install', 'Настройки базы данных успешно сохранены! База данных проинициализирована!'));
 
                         $this->redirect(array('/install/default/createuser/'));
-                    }
+
 
                 }
                 catch (Exception $e)
@@ -228,15 +218,21 @@ class DefaultController extends Controller
         }
 
         $result = $sqlResult = false;
-
-        if (file_exists($dbConfFile) && is_writable($dbConfFile))        
-            $result = true;        
+      
 
         if (file_exists($sqlFile) && is_readable($sqlFile))
             $sqlResult = true;
 
-        $this->render('dbsettings', array('model' => $form, 'sqlResult' => $sqlResult, 'sqlFile' => $sqlFile, 'result' => $result, 'file' => $dbConfFile));
-    }
+        $this->render('dbsettings', 
+            array (
+                'model' => $form, 
+                'sqlResult' => $sqlResult, 
+                'sqlFile' => $sqlFile, 
+                'result' => is_writable( Yii::app()->basePath . '/config/main.php' ), 
+                'file' => Yii::app()->basePath . '/config/main.php'
+            )
+        );
+     }
 
     public function actionCreateuser()
     {
