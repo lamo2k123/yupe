@@ -172,6 +172,7 @@ class DefaultController extends Controller
 
                     $config = new YConfiguration( Yii::app()->basePath . '/config/main.php' );
 
+                    // Запись настроек в файл конфигураций
                     $config->update(
                         array(
                             'components' => array (
@@ -180,7 +181,7 @@ class DefaultController extends Controller
                                     'username' => $form->user,
                                     'password' => $form->password,
                                     'charset' => 'utf8',
-                                    'tablePrefix' => 'sws'
+                                    'tablePrefix' => $form->tablePrefix
                                 )
                             )
                         )

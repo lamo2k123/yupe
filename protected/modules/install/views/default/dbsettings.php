@@ -46,6 +46,11 @@
         <?php echo CHtml::activeLabel($model, 'password'); ?>
         <?php echo CHtml::activePasswordField($model, 'password') ?>
     </div>
+    
+    <div class="row">
+        <?php echo CHtml::activeLabel($model, 'tablePrefix'); ?>
+        <?php echo CHtml::activeTextField($model, 'tablePrefix') ?>
+    </div>
 
     <?php if ($result && $sqlResult): ?>
     <div class="row submit">

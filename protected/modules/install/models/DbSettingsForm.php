@@ -10,11 +10,13 @@ class DbSettingsForm extends CFormModel
     public $user;
 
     public $password;
+    
+    public $tablePrefix;
 
-    //@TODO в форму "Настройки соединения с БД" вынести поле "Префикс таблиц"
-
-    public function rules()
-    {
+    /*
+     * Правила проверки
+     */
+    public function rules() {
         return array(
             array('host, port, dbName, user', 'required'),
             array('password', 'length', 'min' => 0, 'max' => 32),
@@ -29,7 +31,8 @@ class DbSettingsForm extends CFormModel
             'port' => Yii::t('install', 'Порт'),
             'dbName' => Yii::t('install', 'Название базы данных'),
             'user' => Yii::t('install', 'Пользователь'),
-            'password' => Yii::t('install', 'Пароль')
+            'password' => Yii::t('install', 'Пароль'),
+            'tablePrefix' => Yii::t('install', 'Префикс таблиц')
         );
     }
 }

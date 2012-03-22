@@ -15,11 +15,7 @@ class YConfiguration extends CConfiguration {
     
     public function __construct( $file ) {
         
-        if( is_string( $file ) ) {
-                    parent::__construct( require( $file ) );
-        } else { 
-            parent::__construct( $file );
-        }
+        parent::__construct( $file );
         
         $this->file = $file;
     }
