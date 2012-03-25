@@ -6,7 +6,7 @@
  */
 
 return array (
-    'basePath' => '/home/lamo2k123/Yii/yupe/protected/config/..',
+    'basePath' => dirname(__FILE__) . DIRECTORY_SEPARATOR . '..',
     'defaultController' => 'site',
     'name' => 'Юпи!',
     'language' => 'ru',
@@ -38,6 +38,7 @@ return array (
         20 => 'application.modules.social.extensions.eoauth.lib.*',
         21 => 'application.modules.social.extensions.lightopenid.*',
         22 => 'application.modules.social.extensions.eauth.services.*',
+        23 => 'application.modules.install.extensions.migration.*',
     ),
     'components' => array (
         'image' => array (
@@ -94,18 +95,10 @@ return array (
             'class' => 'application.modules.user.components.YWebUser',
             'loginUrl' => '/user/account/login/',
         ),
-        'db' => array (
-            'class' => 'CDbConnection',
-            'connectionString' => 'mysql:host=localhost;dbname=yupe',
-            'username' => 'root',
-            'password' => '',
-            'emulatePrepare' => true,
-            'charset' => 'utf8',
-            'enableParamLogging' => 1,
-            'enableProfiling' => 1,
-            'schemaCachingDuration' => 108000,
-            'tablePrefix' => 'sws',
-        ),
+        
+        // Настройки подключения к базе данных
+        'db' => require( dirname(__FILE__) . '/database.php' ),
+        
         'cache' => array (
             'class' => 'CFileCache',
         ),
@@ -213,50 +206,6 @@ return array (
         'gii' => array (
             'class' => 'system.gii.GiiModule',
             'password' => 'giiYupe',
-        ),
-    ),
-    
-    'commandMap' => array (
-        'migrate' => array (
-            'class' => 'application.modules.yupe.extensions.EMigrateCommand',
-
-            /* Путь к миграциям ядра */
-            'migrationPath' => 'application.modules.yupe.migrations',
-
-            /* Путь к миграциям модулей */
-            'modulePaths' => array (
-                'blog' => 'application.modules.blog.migrations',
-                'category' => 'application.modules.category.migrations',
-                'comment' => 'application.modules.comment.migrations',
-                'contentblock' => 'application.modules.contentblock.migrations',
-                'contest' => 'application.modules.contest.migrations',
-                'dictionary' => 'application.modules.dictionary.migrations',
-                'feedback' => 'application.modules.feedback.migrations',
-                'gallery' => 'application.modules.gallery.migrations',
-                'image' => 'application.modules.image.migrations',
-                'install' => 'application.modules.install.migrations',
-                'news' => 'application.modules.news.migrations',
-                'page' => 'application.modules.page.migrations',
-                'social' => 'application.modules.social.migrations',
-                'user' => 'application.modules.user.migrations',
-                'vote' => 'application.modules.vote.migrations',
-            ),
-            
-            /* Таблица с информацией о миграциях */
-            'migrationTable' => 'tbl_migration',
-
-            'applicationModuleName' => 'yupe',
-
-            'disabledModules' => array (
-                'admin', 
-                'anOtherModule',
-            ),
-
-            /* Соеединение с базой данных */
-            'connectionID' => 'db',
-
-            /* Шаблон миграции */
-            'templateFile' => 'application.db.migration_template',
         ),
     ),
     

@@ -141,6 +141,14 @@ class DefaultController extends Controller
      * Шаг настроек соединения с базой данных.
      */
     public function actionDbsettings() {
+
+        
+        
+        
+        $migrationManager = new migrationManager( Yii::app()->basePath . '/modules/' );
+        echo var_dump( $migrationManager->getList( 'yupe' ) );    
+        
+        exit();
         
         $this->stepName = Yii::t('install', 'Шаг 3 из 6 : "Соединение с базой данных"');
         
